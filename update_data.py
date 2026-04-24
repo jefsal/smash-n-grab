@@ -32,13 +32,10 @@ def fetch_current_month_data():
     #       AND
     #   incidents before the the first day of next month
     where_filter = (
-        'incident subcategory = "Larceny - from vehicle" '
+        'incident_subcategory = "Larceny - From Vehicle" '
         f"AND incident_date >= '{f_month_start}' "
         f"AND incident_date < '{f_next_month_start}'"
     ) 
-
-    # declare outside of loop scope
-    data_rows = [] 
 
     # API call parameters
     params = {
@@ -50,7 +47,6 @@ def fetch_current_month_data():
     response = requests.get(url, params=params, timeout=10)
     response.raise_for_status()
 
-
     # clean date values ?? maybe?
     return response
 
@@ -58,8 +54,8 @@ def fetch_current_month_data():
 def save_monthly_data_to_file():
     # save current month data to csv file
     current_data = fetch_current_month_data()
-    with open(OUT_FILE, "w", encoding="utf-8") as out_f:
-        out_f.write(current_data.txt)
+    with open(OUT_FILE, "w", encoding="utf-8", newline="") as out_f:
+        out_f.write(current_data.text)
 
     # count total rows 
     total_rows = len(current_data.text.splitlines())
@@ -67,4 +63,4 @@ def save_monthly_data_to_file():
 
 # print success
 saved_data_rows= save_monthly_data_to_file()
-print(f"Saved {len(saved_data_rows)} rows to {OUT_FILE}")
+print(f"Saved {saved_data_rows} rows to {OUT_FILE}")
