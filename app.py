@@ -73,6 +73,16 @@ try:
         # show monthly chart grouped by day
         st.subheader("Current month reported incidents grouped by day")
         st.area_chart(current_month_per_day)
+        st.divider()
+
+        # if row has coordinates, show on map
+        map_data = current_month.dropna(subset=["latitude", "longitude"])
+
+        st.subheader("Incidnet Map")
+        st.map(map_data[["latitude","longitude"]])
+        st.write("Here we have the current month's Larceny from a vehicle incidents displayed over a map of San Francisco.") 
+        st.write("This is possible because with most police reports latitude and longitude coordinates are included, although they only point to the nearest intersection and not the exact coordinates of the incident.")
+
 except FileNotFoundError:
     st.error("The saved local file was not found")
 except Exception as unexpected_error:
