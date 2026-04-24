@@ -20,9 +20,8 @@ with col2:
     # image 
     st.image("car-window-break-in.jpg")
     st.caption("POV your macbook is gone")
-
-
 st.divider()
+
 
 # 2025 larceny theft records 
 st.subheader("Smash and Grabs This Month")

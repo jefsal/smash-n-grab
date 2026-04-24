@@ -6,13 +6,13 @@ import os
 from datetime import datetime
 import requests
 
-# delcare output file and path, easy access for streamlit
+# delcare absolute output file and path, easy access for streamlit
 OUT_FILE = os.path.join(
     os.path.dirname(__file__),
     "current_month_data.csv",
 )
 
-# fetch current month data daily and cache on server for 60s
+# fetch current month data daily with filters 
 def fetch_current_month_data():
     # public API endpoint from DataSF
     url = "https://data.sfgov.org/resource/wg3w-h783.csv"
@@ -48,6 +48,7 @@ def fetch_current_month_data():
     response.raise_for_status()
 
     # clean date values? maybe?
+ 
     return response
 
 # save data to file and return rows saved
