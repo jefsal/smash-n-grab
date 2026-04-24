@@ -71,7 +71,7 @@ try:
 
         # show monthly chart grouped by day
         st.subheader("Current month reported incidents grouped by day")
-        st.area_chart(current_month_per_day)
+        st.line_chart(current_month_per_day)
         st.divider()
 
         # if row has coordinates, show on map
