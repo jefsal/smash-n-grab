@@ -47,7 +47,7 @@ def fetch_current_month_data():
     response = requests.get(url, params=params, timeout=10)
     response.raise_for_status()
 
-    # clean date values ?? maybe?
+    # clean date values? maybe?
     return response
 
 # save data to file and return rows saved

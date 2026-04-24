@@ -9,10 +9,19 @@ import streamlit as st
 import pandas as pd
 import os
 
-# Short intro
-st.title("Crime in San Francisco")
-st.write("There is a popular form of crime that San Francisco has become accostomed to, Larceny Theft and more specifically larceny theft from a vehicle. Better known as \"smash and grab.\"")
-st.write("I am curious about what trends and patterns, if any, we can identify by pulling public data from police reports and filtering for larceny theft from a vehicle.")
+
+col1, col2 = st.columns(2)
+with col1:
+    # Short intro
+    st.title("Crime in San Francisco")
+    st.write("There is a popular form of crime that San Francisco has become accostomed to, Larceny Theft and more specifically larceny theft from a vehicle. Better known as \"smash and grab.\"")
+    st.write("I am curious about what trends and patterns, if any, we can identify by pulling public data from police reports and filtering for larceny theft from a vehicle.")
+with col2:
+    # image 
+    st.image("car-window-break-in.jpg")
+    st.caption("POV your macbook is gone")
+
+
 st.divider()
 
 # 2025 larceny theft records 
@@ -37,14 +46,13 @@ def load_current_month_data():
 
     return saved_data
 
-st.write("Larceny - from vehicle")
 
 try:
     # read from local save csv file
     current_month = load_current_month_data()
 
     if current_month.empty:
-        st.write("No incidents this month! Must be the first day of the month.")
+        st.write("No incidents this month!")
     else:
         # categorize incidents by day for chart readability
         # dt.normalize() to remove time, group all incidents on the same day
@@ -58,6 +66,7 @@ try:
                 .sort_values("incident_day").set_index("incident_day")
         )
 
+        st.write("Larceny - from vehicle")
         # summarize metrics, verify query to local csv worked
         st.caption(f"rows loaded from local csv: {len(current_month)}")
 
