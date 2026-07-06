@@ -18,7 +18,7 @@ with col1:
     st.write("I am curious about what trends and patterns, if any, we can identify by pulling public data from police reports and filtering for larceny theft from a vehicle.")
 with col2:
     # image 
-    st.image("car-window-break-in.jpg")
+    st.image("assets/car-window-break-in.jpg")
     st.caption("POV your macbook is gone")
 st.divider()
 
