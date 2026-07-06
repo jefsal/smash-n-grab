@@ -1,0 +1,59 @@
+name: Update Data
+
+on:
+  schedule:
+    # GitHub Actions cron runs in UTC. These cover 11:00 AM Pacific
+    # during daylight saving time and standard time.
+    - cron: "0 18 * * *"
+    - cron: "0 19 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Pacific time
+        id: pacific-time
+        run: |
+          if [ "$(TZ=America/Los_Angeles date +%H)" = "11" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out repository
+        if: steps.pacific-time.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        if: steps.pacific-time.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        if: steps.pacific-time.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
+        run: python -m pip install -r requirements.txt
+
+      - name: Refresh current-month data
+        if: steps.pacific-time.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
+        run: python update_data.py
+
+      - name: Commit updated CSV
+        if: steps.pacific-time.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          if git diff --quiet -- current_month_data.csv; then
+            echo "No CSV changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add current_month_data.csv
+          git commit -m "Update current month crime data"
+          git push

@@ -19,11 +19,13 @@ I started this project because I was curious on what data visualization can allo
 
 ```text
 bip-maps/
+├── .github/workflows/
+│   └── update-data.yml      # Daily GitHub Actions data refresh
+├── assets/
+│   └── car-window-break-in.jpg
 ├── app.py                   # Main Streamlit app
 ├── update_data.py           # Fetches current-month data from DataSF
-├── sf_vis.py                # Alternate Streamlit app variant
 ├── current_month_data.csv   # Local saved dataset
-├── car-window-break-in.jpg  # App image asset
 ├── requirements.txt         # Python dependencies
 └── README.md
 ```
@@ -34,9 +36,15 @@ Official source used by this project:
 
 - DataSF Police Department Incident Reports (2018 to Present): https://data.sfgov.org/Public-Safety/Police-Department-Incident-Reports-2018-to-Present/wg3w-h783/about_data
 
+### Daily Data Refresh
+
+GitHub Actions runs `update_data.py` once daily at 11:00 AM Pacific time, updates `current_month_data.csv`, and commits the CSV back to the repository when the data changes.
+
 ## Run
 
 ```bash
 python3 update_data.py
 streamlit run app.py
 ```
+
+

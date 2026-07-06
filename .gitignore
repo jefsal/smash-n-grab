@@ -4,4 +4,8 @@ __pycache__/
 .DS_Store
 .streamlit/secrets.toml
 sf_vis.py
-.github/
+.github/*
+!.github/workflows/
+.github/workflows/*
+!.github/workflows/*.yml
+!.github/workflows/*.yaml
