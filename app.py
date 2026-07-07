@@ -53,6 +53,8 @@ try:
     if current_month.empty:
         st.write("No incidents this month!")
     else:
+        current_month_name = current_month["incident_date"].dt.month_name().iloc[0]
+
         # categorize incidents by day for chart readability
         # dt.normalize() to remove time, group all incidents on the same day
         current_month_per_day = (
@@ -70,7 +72,7 @@ try:
         st.caption(f"rows loaded from local csv: {len(current_month)}")
 
         # show monthly chart grouped by day
-        st.subheader("Current month reported incidents grouped by day")
+        st.subheader(f"Reported incidents in {current_month_name} grouped by day")
         st.line_chart(current_month_per_day)
         st.divider()
 
