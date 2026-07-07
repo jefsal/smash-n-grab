@@ -26,6 +26,7 @@ bip-maps/
 ├── app.py                   # Main Streamlit app
 ├── update_data.py           # Fetches current-month data from DataSF
 ├── current_month_data.csv   # Local saved dataset
+├── data_update_metadata.json # Last successful data refresh timestamp
 ├── requirements.txt         # Python dependencies
 └── README.md
 ```
@@ -38,7 +39,7 @@ Official source used by this project:
 
 ### Daily Data Refresh
 
-GitHub Actions runs `update_data.py` once daily at 11:00 AM Pacific time, updates `current_month_data.csv`, and commits the CSV back to the repository when the data changes.
+GitHub Actions runs `update_data.py` once daily at 11:00 AM Pacific time, updates `current_month_data.csv`, records the successful refresh time in `data_update_metadata.json`, and commits both files back to the repository when they change.
 
 ## Run
 
@@ -46,5 +47,4 @@ GitHub Actions runs `update_data.py` once daily at 11:00 AM Pacific time, update
 python3 update_data.py
 streamlit run app.py
 ```
-
 

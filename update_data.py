@@ -5,6 +5,7 @@
 import os
 import csv
 import io
+import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import requests
@@ -13,6 +14,10 @@ import requests
 OUT_FILE = os.path.join(
     os.path.dirname(__file__),
     "current_month_data.csv",
+)
+LAST_UPDATED_FILE = os.path.join(
+    os.path.dirname(__file__),
+    "data_update_metadata.json",
 )
 DATA_URL = "https://data.sfgov.org/resource/wg3w-h783.csv"
 LOCAL_TZ = ZoneInfo("America/Los_Angeles")
@@ -45,6 +50,16 @@ def validate_csv(csv_text):
     if missing_columns:
         missing = ", ".join(sorted(missing_columns))
         raise ValueError(f"DataSF response missing expected columns: {missing}")
+
+
+def save_update_metadata():
+    metadata = {
+        "last_successful_update": datetime.now(LOCAL_TZ).isoformat(timespec="seconds")
+    }
+
+    with open(LAST_UPDATED_FILE, "w", encoding="utf-8") as metadata_f:
+        json.dump(metadata, metadata_f, indent=2)
+        metadata_f.write("\n")
 
 
 # fetch current month data daily with filters
@@ -87,6 +102,8 @@ def save_monthly_data_to_file():
 
     with open(OUT_FILE, "w", encoding="utf-8", newline="") as out_f:
         out_f.write(current_data.text)
+
+    save_update_metadata()
 
     # count data rows, excluding the header
     total_rows = max(len(current_data.text.splitlines()) - 1, 0)

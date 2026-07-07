@@ -44,16 +44,16 @@ jobs:
         if: steps.pacific-time.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         run: python update_data.py
 
-      - name: Commit updated CSV
+      - name: Commit updated data files
         if: steps.pacific-time.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         run: |
-          if git diff --quiet -- current_month_data.csv; then
-            echo "No CSV changes to commit."
+          if [ -z "$(git status --porcelain -- current_month_data.csv data_update_metadata.json)" ]; then
+            echo "No data changes to commit."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add current_month_data.csv
+          git add current_month_data.csv data_update_metadata.json
           git commit -m "Update current month crime data"
           git push

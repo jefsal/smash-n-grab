@@ -8,6 +8,8 @@
 import streamlit as st
 import pandas as pd
 import os
+import json
+from datetime import datetime
 
 
 col1, col2 = st.columns(2)
@@ -31,6 +33,10 @@ current_month_csv_path = os.path.join(
     os.path.dirname(__file__),
     "current_month_data.csv",
 )
+last_updated_path = os.path.join(
+    os.path.dirname(__file__),
+    "data_update_metadata.json",
+)
 
 # Fetch data from csv and cache
 @st.cache_data
@@ -46,9 +52,30 @@ def load_current_month_data():
     return saved_data
 
 
+# fetch the date the local csv was last updated
+@st.cache_data
+def load_last_update_date():
+    try:
+        with open(last_updated_path, encoding="utf-8") as metadata_f:
+            metadata = json.load(metadata_f)
+
+        last_successful_update = datetime.fromisoformat(
+            metadata["last_successful_update"]
+        )
+    except (FileNotFoundError, KeyError, TypeError, ValueError):
+        return "Unknown"
+
+    return (
+        f"{last_successful_update:%B} "
+        f"{last_successful_update.day}, "
+        f"{last_successful_update:%Y}"
+    )
+
+
 try:
     # read from local save csv file
     current_month = load_current_month_data()
+    last_update_date = load_last_update_date()
 
     if current_month.empty:
         st.write("No incidents this month!")
@@ -68,8 +95,14 @@ try:
         )
 
         st.write("Larceny - from vehicle")
-        # summarize metrics, verify query to local csv worked
-        st.caption(f"rows loaded from local csv: {len(current_month)}")
+        # summarize metrics, verify query to local csv worked successfully
+
+        col3, col4 = st.columns(2)
+        with col3:
+            st.caption(f"rows loaded from local csv: {len(current_month)}")
+
+        with col4:
+            st.caption(f"data last updated on: {last_update_date}")
 
         # show monthly chart grouped by day
         st.subheader(f"Reported incidents in {current_month_name} grouped by day")
@@ -81,9 +114,9 @@ try:
 
         st.subheader("Incidnet Map")
         st.map(map_data[["latitude","longitude"]])
+
         st.write("Here we have the current month's Larceny from a vehicle incidents displayed over a map of San Francisco.") 
         st.write("This is possible because with most police reports latitude and longitude coordinates are included, although they only point to the nearest intersection and not the exact coordinates of the incident.")
-
 except FileNotFoundError:
     st.error("The saved local file was not found")
 except Exception as unexpected_error:
