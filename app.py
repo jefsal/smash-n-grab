@@ -38,11 +38,19 @@ last_updated_path = os.path.join(
     "data_update_metadata.json",
 )
 
+
+def get_file_mtime(path):
+    try:
+        return os.path.getmtime(path)
+    except OSError:
+        return None
+
+
 # Fetch data from csv and cache
 @st.cache_data
-def load_current_month_data():
+def load_current_month_data(csv_path, csv_mtime):
     # read saved data from csv
-    saved_data = pd.read_csv(current_month_csv_path)
+    saved_data = pd.read_csv(csv_path)
 
     # format incident date time for dt accessor
     saved_data["incident_date"] = pd.to_datetime(saved_data["incident_date"])
@@ -54,9 +62,12 @@ def load_current_month_data():
 
 # fetch the date the local csv was last updated
 @st.cache_data
-def load_last_update_date():
+def load_last_update_date(metadata_path, metadata_mtime):
+    if metadata_mtime is None:
+        return "Unknown"
+
     try:
-        with open(last_updated_path, encoding="utf-8") as metadata_f:
+        with open(metadata_path, encoding="utf-8") as metadata_f:
             metadata = json.load(metadata_f)
 
         last_successful_update = datetime.fromisoformat(
@@ -74,8 +85,14 @@ def load_last_update_date():
 
 try:
     # read from local save csv file
-    current_month = load_current_month_data()
-    last_update_date = load_last_update_date()
+    current_month = load_current_month_data(
+        current_month_csv_path,
+        get_file_mtime(current_month_csv_path),
+    )
+    last_update_date = load_last_update_date(
+        last_updated_path,
+        get_file_mtime(last_updated_path),
+    )
 
     if current_month.empty:
         st.write("No incidents this month!")
